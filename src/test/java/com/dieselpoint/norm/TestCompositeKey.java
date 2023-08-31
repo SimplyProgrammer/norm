@@ -1,18 +1,18 @@
 package com.dieselpoint.norm;
 
-import com.dieselpoint.norm.sqlmakers.MySqlMaker;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.dieselpoint.norm.sqlmakers.MySqlMaker;
 
 public class TestCompositeKey
 {
@@ -145,6 +145,7 @@ public class TestCompositeKey
 		public String otherId;
 
 		public String name;
+		@Override
 		public String toString() {
 			return id + name;
 		}

@@ -18,13 +18,13 @@ public class Setup {
 				"jdbc:mysql://localhost:3306/mydb?useSSL=false&allowPublicKeyRetrieval=true");
 		System.setProperty("norm.user", "root");
 		// System.setProperty("norm.password", "rootpassword");
-		*/
+		 */
 
 		/*-
 		System.setProperty("norm.dataSourceClassName", "org.postgresql.ds.PGSimpleDataSource");
 		System.setProperty("norm.user", "postgres");
 		System.setProperty("norm.password", "postgres");
-		*/
+		 */
 
 		/*-
 		 * H2 handles mixed-case column names incorrectly.
@@ -39,13 +39,13 @@ public class Setup {
 		System.setProperty("norm.jdbcUrl", "jdbc:sqlite:sqlitetest.db");
 		System.setProperty("norm.user", "root");
 		System.setProperty("norm.password", "rootpassword");
-		*/
+		 */
 
 		/*-
 		 * Does not run sample code because the "drop database if exists names" chokes on "exists"
 		System.setProperty("norm.jdbcUrl", "jdbc:derby:mydb;create=true");
 		System.setProperty("norm.user", "root");
-		*/
+		 */
 
 	}
 }

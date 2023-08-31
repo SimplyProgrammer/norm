@@ -2,6 +2,7 @@ package com.dieselpoint.norm.sqlmakers;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,6 +20,7 @@ public class StandardSqlMaker implements SqlMaker {
 
 	private static ConcurrentHashMap<Class<?>, StandardPojoInfo> map = new ConcurrentHashMap<>();
 
+	@Override
 	public synchronized StandardPojoInfo getPojoInfo(Class<?> rowClass) {
 		StandardPojoInfo pi = map.get(rowClass);
 		if (pi == null) {
@@ -93,15 +95,15 @@ public class StandardSqlMaker implements SqlMaker {
 		}
 		pojoInfo.updateColumnNames = cols.toArray(new String[cols.size()]);
 		pojoInfo.updateSqlArgCount = pojoInfo.updateColumnNames.length + pojoInfo.primaryKeyNames.size(); // + # of
-																											// primary
-																											// keys for
-																											// the where
-																											// arg
+		// primary
+		// keys for
+		// the where
+		// arg
 
 		StringBuilder buf = new StringBuilder();
 		buf.append("update %s set ");
 
-		for (int i = 0; i < cols.size(); i++) {
+		for (int i = 0, size = cols.size(); i < size; i++) {
 			if (i > 0) {
 				buf.append(',');
 			}
@@ -109,7 +111,7 @@ public class StandardSqlMaker implements SqlMaker {
 		}
 		buf.append(" where ");
 
-		for (int i = 0; i < pojoInfo.primaryKeyNames.size(); i++) {
+		for (int i = 0, size = pojoInfo.primaryKeyNames.size(); i < size; i++) {
 			if (i > 0) {
 				buf.append(" and ");
 			}
@@ -142,10 +144,10 @@ public class StandardSqlMaker implements SqlMaker {
 			// this applies if the rowClass is a Map
 			pojoInfo.selectColumns = "*";
 		} else {
-			ArrayList<String> cols = new ArrayList<>();
-			for (Property prop : pojoInfo.propertyMap.values()) {
-				cols.add(prop.name);
-			}
+			String[] cols = new String[pojoInfo.propertyMap.size()];
+			int i = 0;
+			for (Property prop : pojoInfo.propertyMap.values()) 
+				cols[i++] = prop.name;
 			pojoInfo.selectColumns = Util.join(cols);
 		}
 	}
@@ -210,42 +212,33 @@ public class StandardSqlMaker implements SqlMaker {
 					buf.append(" auto_increment");
 				}
 
+			} else if (columnAnnot.columnDefinition() != null) {
+
+				// let the column def override everything
+				buf.append(columnAnnot.columnDefinition());
+
 			} else {
-				if (columnAnnot.columnDefinition() != null) {
 
-					// let the column def override everything
-					buf.append(columnAnnot.columnDefinition());
+				buf.append(prop.name);
+				buf.append(" ");
+				buf.append(getColType(prop.dataType, columnAnnot.length(), columnAnnot.precision(),
+						columnAnnot.scale()));
+				if (prop.isGenerated) {
+					buf.append(" auto_increment");
+				}
 
-				} else {
+				if (columnAnnot.unique()) {
+					buf.append(" unique");
+				}
 
-					buf.append(prop.name);
-					buf.append(" ");
-					buf.append(getColType(prop.dataType, columnAnnot.length(), columnAnnot.precision(),
-							columnAnnot.scale()));
-					if (prop.isGenerated) {
-						buf.append(" auto_increment");
-					}
-
-					if (columnAnnot.unique()) {
-						buf.append(" unique");
-					}
-
-					if (!columnAnnot.nullable()) {
-						buf.append(" not null");
-					}
+				if (!columnAnnot.nullable()) {
+					buf.append(" not null");
 				}
 			}
 		}
 
 		if (pojoInfo.primaryKeyNames.size() > 0) {
-			buf.append(", primary key (");
-			for (int i = 0; i < pojoInfo.primaryKeyNames.size(); i++) {
-				if (i > 0) {
-					buf.append(",");
-				}
-				buf.append(pojoInfo.primaryKeyNames.get(i));
-			}
-			buf.append(")");
+			buf.append(", primary key (").append(Util.join(pojoInfo.primaryKeyNames)).append(")");
 		}
 
 		buf.append(")");
@@ -280,6 +273,7 @@ public class StandardSqlMaker implements SqlMaker {
 		return colType;
 	}
 
+	@Override
 	public Object convertValue(Object value, String columnTypeName) {
 		return value;
 	}
@@ -299,7 +293,7 @@ public class StandardSqlMaker implements SqlMaker {
 
 		StringBuilder builder = new StringBuilder("delete from ");
 		builder.append(table).append(" where ");
-		for (int i = 0; i < pojoInfo.primaryKeyNames.size(); i++) {
+		for (int i = 0, size = pojoInfo.primaryKeyNames.size(); i < size; i++) {
 			if (i > 0) {
 				builder.append(" and ");
 			}

@@ -23,5 +23,5 @@ public class Property {
 	public EnumType enumType;
 	public Column columnAnnotation;
 	public DbSerializable serializer;
-	public AttributeConverter converter;
+	public AttributeConverter<? super Object, ? super Object> converter;
 }

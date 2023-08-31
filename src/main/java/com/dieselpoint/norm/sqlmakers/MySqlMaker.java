@@ -1,8 +1,8 @@
 package com.dieselpoint.norm.sqlmakers;
 
-import com.dieselpoint.norm.Query;
-
 import java.util.Objects;
+
+import com.dieselpoint.norm.Query;
 
 
 public class MySqlMaker extends StandardSqlMaker {

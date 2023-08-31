@@ -3,6 +3,7 @@ package com.dieselpoint.norm.converter;
 import java.sql.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.AttributeConverter;
@@ -25,13 +26,8 @@ public class IntArrayToListConverter implements AttributeConverter<List<Integer>
 			if (dbData.getBaseType() != java.sql.Types.INTEGER) {
 				throw new DbException("Database is not returning an integer array");
 			}
-			
-			Integer [] arr = (Integer[]) dbData.getArray();
-			List<Integer> out = new ArrayList<>();
-			for (Integer i: arr) {
-				out.add(i);
-			}
-			return out;
+
+			return new ArrayList<>(Arrays.asList((Integer[]) dbData.getArray()));
 
 		} catch (SQLException e) {
 			throw new DbException(e);

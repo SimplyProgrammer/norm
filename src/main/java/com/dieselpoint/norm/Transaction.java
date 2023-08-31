@@ -1,10 +1,10 @@
 package com.dieselpoint.norm;
 
-import com.dieselpoint.norm.latency.LatencyTimer;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.sql.Connection;
+
+import com.dieselpoint.norm.latency.LatencyTimer;
 
 /**
  * Represents a database transaction. Create it using Transaction trans =
@@ -27,14 +27,14 @@ public class Transaction implements Closeable {
 	private long maxLatency;
 
 	Transaction() {
-		this.maxLatency = -1;
+		maxLatency = -1;
 	}
 
 	// package-private
 	Transaction( Database db, Connection con ) throws DbException {
 		this.db = db;
 		this.con = con;
-		this.maxLatency = db.getMaxLatencyMillis();
+		maxLatency = db.getMaxLatencyMillis();
 		setConnection( con );
 	}
 
@@ -101,7 +101,7 @@ public class Transaction implements Closeable {
 	 * @return {@code this}, to enable maxLatency to be chained, a la {@code trans.maxLatency("Ten People Transaction", 50).commit()}
 	 */
 	public Transaction maxLatency( long millis ) {
-		this.maxLatency = millis;
+		maxLatency = millis;
 		return this;
 	}
 

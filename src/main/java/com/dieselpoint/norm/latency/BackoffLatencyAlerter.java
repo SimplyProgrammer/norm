@@ -1,10 +1,10 @@
 package com.dieselpoint.norm.latency;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.time.Duration;
 import java.util.Random;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * One of the dangers when reporting latency issues to external services, is that the reporting itself a) takes a
@@ -24,60 +24,60 @@ import java.util.Random;
  */
 @SuppressWarnings( "unused" )
 public abstract class BackoffLatencyAlerter implements LatencyAlerter {
-    private static final Logger logger = LoggerFactory.getLogger( BackoffLatencyAlerter.class );
+	private static final Logger logger = LoggerFactory.getLogger( BackoffLatencyAlerter.class );
 
-    private final long minimumReportingLatencyMillis, maximumReportingIntervalMillis;
-    private long nextReportTime;
-    private double backoffs;
-    private long alertsSwallowedWhileWaiting = 0;
-    private final Random random = new Random();
+	private final long minimumReportingLatencyMillis, maximumReportingIntervalMillis;
+	private long nextReportTime;
+	private double backoffs;
+	private long alertsSwallowedWhileWaiting = 0;
+	private final Random random = new Random();
 
-    public BackoffLatencyAlerter( Duration minimumReportingInterval, Duration maximumReportingInterval ) {
-        this.minimumReportingLatencyMillis = minimumReportingInterval.toMillis();
-        this.maximumReportingIntervalMillis = maximumReportingInterval.toMillis();
-        this.backoffs = 1;
-        this.nextReportTime = System.currentTimeMillis();
-    }
+	public BackoffLatencyAlerter( Duration minimumReportingInterval, Duration maximumReportingInterval ) {
+		minimumReportingLatencyMillis = minimumReportingInterval.toMillis();
+		maximumReportingIntervalMillis = maximumReportingInterval.toMillis();
+		backoffs = 1;
+		nextReportTime = System.currentTimeMillis();
+	}
 
-    private long calculateWaitTime() {
-        backoffs += (alertsSwallowedWhileWaiting > 0) ? 1 : -0.25; // come back down much more slowly than we went up
-        backoffs = backoffs < 1 ? 1 : backoffs;
+	private long calculateWaitTime() {
+		backoffs += alertsSwallowedWhileWaiting > 0 ? 1 : -0.25; // come back down much more slowly than we went up
+		backoffs = backoffs < 1 ? 1 : backoffs;
 
-        // timeToWait = (base * 2^n) +/- (jitter)
-        long jitter = (minimumReportingLatencyMillis/2) - (random.nextLong() % minimumReportingLatencyMillis);
-        long timeToWait = (minimumReportingLatencyMillis * (long)Math.pow(2, backoffs) ) + jitter;
-        if (timeToWait > maximumReportingIntervalMillis) {
-            // timeToWait = maximumReportingIntervalMillis; - NO, we still want the jitter included
-            --backoffs;
-        }
-        return timeToWait;
-    }
+		// timeToWait = (base * 2^n) +/- (jitter)
+		long jitter = minimumReportingLatencyMillis/2 - random.nextLong() % minimumReportingLatencyMillis;
+		long timeToWait = minimumReportingLatencyMillis * (long)Math.pow(2, backoffs) + jitter;
+		if (timeToWait > maximumReportingIntervalMillis) {
+			// timeToWait = maximumReportingIntervalMillis; - NO, we still want the jitter included
+			--backoffs;
+		}
+		return timeToWait;
+	}
 
-    @Override
-    public synchronized void alertLatencyFailure( DbLatencyWarning warning ) {
-        if (warning.maxAcceptableLatency != 0) {
-            long myTime = System.currentTimeMillis();
-            if (nextReportTime <= myTime) {
-                if (alertLatencyFailureAfterBackoffAndJitter( warning, alertsSwallowedWhileWaiting ) == false)
-                    ++alertsSwallowedWhileWaiting;
-                nextReportTime = myTime + calculateWaitTime();
-                alertsSwallowedWhileWaiting = 0;
-            }
-            else {
-                logger.info( "Swallowed latency failure:" + warning );
-                ++alertsSwallowedWhileWaiting;
-            }
-        }
-    }
+	@Override
+	public synchronized void alertLatencyFailure( DbLatencyWarning warning ) {
+		if (warning.maxAcceptableLatency != 0) {
+			long myTime = System.currentTimeMillis();
+			if (nextReportTime <= myTime) {
+				if (!alertLatencyFailureAfterBackoffAndJitter( warning, alertsSwallowedWhileWaiting ))
+					++alertsSwallowedWhileWaiting;
+				nextReportTime = myTime + calculateWaitTime();
+				alertsSwallowedWhileWaiting = 0;
+			}
+			else {
+				logger.info( "Swallowed latency failure:" + warning );
+				++alertsSwallowedWhileWaiting;
+			}
+		}
+	}
 
-    /**
-     * @param warning the latency warning
-     * @param numberOfAlertsSwallowed the number of alerts that were swallowed during the exponential backoff period. This
-     *                                might (or might not) be interesting to report alongside the current issue. It'll
-     *                                definitely give you a sense of how bad things have gone!
-     * @return true if notifying the remote service was successful, false otherwise. If false, then we'll automatically
-     *          backoff calls to reporting in the same way as latency failures, to avoid a slowdown / issue on
-     *          monitoring impacting the actual customer experience
-     */
-    public abstract boolean alertLatencyFailureAfterBackoffAndJitter( DbLatencyWarning warning, long numberOfAlertsSwallowed );
+	/**
+	 * @param warning the latency warning
+	 * @param numberOfAlertsSwallowed the number of alerts that were swallowed during the exponential backoff period. This
+	 *                                might (or might not) be interesting to report alongside the current issue. It'll
+	 *                                definitely give you a sense of how bad things have gone!
+	 * @return true if notifying the remote service was successful, false otherwise. If false, then we'll automatically
+	 *          backoff calls to reporting in the same way as latency failures, to avoid a slowdown / issue on
+	 *          monitoring impacting the actual customer experience
+	 */
+	public abstract boolean alertLatencyFailureAfterBackoffAndJitter( DbLatencyWarning warning, long numberOfAlertsSwallowed );
 }

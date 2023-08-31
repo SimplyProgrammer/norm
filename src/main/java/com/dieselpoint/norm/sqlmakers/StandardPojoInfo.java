@@ -74,9 +74,9 @@ public class StandardPojoInfo implements PojoInfo {
 					// reorder the properties
 					String[] cols = colOrder.value();
 					List<Property> reordered = new ArrayList<>();
-					for (int i = 0; i < cols.length; i++) {
+					for (String col : cols) {
 						for (Property prop : props) {
-							if (prop.name.equals(cols[i])) {
+							if (prop.name.equals(col)) {
 								reordered.add(prop);
 								break;
 							}
@@ -89,7 +89,7 @@ public class StandardPojoInfo implements PojoInfo {
 				for (Property prop : props) {
 					if (propertyMap.put(prop.name, prop) != null) {
 						throw new DbException("Duplicate pojo property found: '" + prop.name + "' in " + clazz.getName()
-								+ ". There may be both a field and a getter/setter");
+						+ ". There may be both a field and a getter/setter");
 					}
 				}
 			}
@@ -169,15 +169,15 @@ public class StandardPojoInfo implements PojoInfo {
 			}
 		}
 
-		this.generatedColumnNames = new String[genCols.size()];
-		genCols.toArray(this.generatedColumnNames);
+		generatedColumnNames = new String[genCols.size()];
+		genCols.toArray(generatedColumnNames);
 
 		return props;
 	}
 
 	/**
 	 * Apply the annotations on the field or getter method to the property.
-	 * 
+	 *
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
@@ -226,6 +226,7 @@ public class StandardPojoInfo implements PojoInfo {
 
 	}
 
+	@Override
 	public Object getValue(Object pojo, String name) {
 
 		try {
@@ -270,10 +271,12 @@ public class StandardPojoInfo implements PojoInfo {
 		}
 	}
 
+	@Override
 	public void putValue(Object pojo, String name, Object value) {
 		putValue(pojo, name, value, false);
 	}
 
+	@Override
 	public void putValue(Object pojo, String name, Object value, boolean ignoreIfMissing) {
 
 		Property prop = propertyMap.get(name);
@@ -342,14 +345,14 @@ public class StandardPojoInfo implements PojoInfo {
 						"Invalid ordinal number " + ordinalValue + " for enum class " + enumType.getCanonicalName());
 			}
 			return enumType.getEnumConstants()[ordinalValue];
-		} else {
-			for (T e : enumType.getEnumConstants()) {
-				if (str.equals(e.toString())) {
-					return e;
-				}
-			}
-			throw new DbException("Enum value does not exist. value:" + str);
 		}
+
+		for (T e : enumType.getEnumConstants()) {
+			if (str.equals(e.toString())) {
+				return e;
+			}
+		}
+		throw new DbException("Enum value does not exist. value:" + str);
 	}
 
 	@Override
@@ -359,7 +362,7 @@ public class StandardPojoInfo implements PojoInfo {
 
 	@Override
 	public String[] getGeneratedColumnNames() {
-		return this.generatedColumnNames;
+		return generatedColumnNames;
 	}
 
 }

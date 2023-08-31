@@ -7,5 +7,5 @@ package com.dieselpoint.norm.latency;
  * it should be trivial to forward the latency alert to e.g. AWS Cloudwatch, PagerDuty, or honeybadger.io
  */
 public interface LatencyAlerter {
-    public void alertLatencyFailure( DbLatencyWarning warning );
+	public void alertLatencyFailure( DbLatencyWarning warning );
 }

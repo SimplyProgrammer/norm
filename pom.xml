@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.dieselpoint</groupId>
@@ -41,10 +43,12 @@
 		<skipTests>true</skipTests>
 	</properties>
 
-	<!-- Here's the explanation for all this: http://central.sonatype.org/pages/apache-maven.html -->
+	<!-- Here's the explanation for all this:
+	http://central.sonatype.org/pages/apache-maven.html -->
 	<!-- "mvn install" to do a build -->
 	<!-- "mvn clean deploy" to do an actual release to central -->
-	<!-- Do these from the command line, not Eclipse. Eclipse messes up java.home. -->
+	<!-- Do these from the command line, not Eclipse. Eclipse messes up
+	java.home. -->
 	<!-- Look in my local notes/norm project for more -->
 
 	<distributionManagement>

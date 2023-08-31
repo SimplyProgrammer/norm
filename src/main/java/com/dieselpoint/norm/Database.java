@@ -105,7 +105,7 @@ public class Database {
 	/**
 	 * Create a query using straight SQL. Overrides any other methods like .where(),
 	 * .orderBy(), etc.
-	 * 
+	 *
 	 * @param sql  The SQL string to use, may include ? parameters.
 	 * @param args The parameter values to use in the query.
 	 */
@@ -115,7 +115,7 @@ public class Database {
 
 	/**
 	 * Create a query with the given where clause.
-	 * 
+	 *
 	 * @param where Example: "name=?"
 	 * @param args  The parameter values to use in the where, example: "Bob"
 	 */
@@ -228,7 +228,7 @@ public class Database {
 	 * command that should be part of the transaction using the .transaction()
 	 * method. Then call transaction.commit() or .rollback() to complete the
 	 * process. No need to close the transaction.
-	 * 
+	 *
 	 * @return a transaction object
 	 */
 	public Transaction startTransaction() {
@@ -292,7 +292,7 @@ public class Database {
 	 * an easy way to log all SQL Statements. This value can also be set using environment variable {@code norm.maxLatency }
 	 */
 	public void setMaxLatency( long millis ) {
-		this.maxLatency = millis;
+		maxLatency = millis;
 	}
 
 	/**
@@ -304,7 +304,7 @@ public class Database {
 	 * @param alerter, the alerter to add
 	 */
 	public void addLatencyAlerter( LatencyAlerter alerter ) {
-		this.latencyAlerters.add( alerter );
+		latencyAlerters.add( alerter );
 	}
 
 	public void alertLatency( DbLatencyWarning latencyWarning ) {

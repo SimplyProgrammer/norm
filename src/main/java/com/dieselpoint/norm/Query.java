@@ -45,14 +45,14 @@ public class Query {
 
 	public Query(Database db) {
 		this.db = db;
-		this.sqlMaker = db.getSqlMaker();
-		this.maxLatency( db.getMaxLatencyMillis() );
+		sqlMaker = db.getSqlMaker();
+		maxLatency( db.getMaxLatencyMillis() );
 	}
 
 	/**
 	 * Add a where clause and some parameters to a query. Has no effect if the
 	 * .sql() method is used.
-	 * 
+	 *
 	 * @param where Example: "name=?"
 	 * @param args  The parameter values to use in the where, example: "Bob"
 	 */
@@ -65,7 +65,7 @@ public class Query {
 	/**
 	 * Create a query using straight SQL. Overrides any other methods like .where(),
 	 * .orderBy(), etc.
-	 * 
+	 *
 	 * @param sql  The SQL string to use, may include ? parameters.
 	 * @param args The parameter values to use in the query.
 	 */
@@ -78,7 +78,7 @@ public class Query {
 	/**
 	 * Create a query using straight SQL. Overrides any other methods like .where(),
 	 * .orderBy(), etc.
-	 * 
+	 *
 	 * @param sql  The SQL string to use, may include ? parameters.
 	 * @param args The parameter values to use in the query.
 	 */
@@ -104,9 +104,8 @@ public class Query {
 		List<T> list = results(clazz);
 		if (!list.isEmpty()) {
 			return list.get(0);
-		} else {
-			return null;
 		}
+		return null;
 	}
 
 	/**
@@ -261,12 +260,12 @@ public class Query {
 	 */
 	public Query insert(Object row) {
 
-		if (this.generatedKeyReceiver == null) {
+		if (generatedKeyReceiver == null) {
 			PojoInfo pojoInfo = sqlMaker.getPojoInfo(row.getClass());
 			String[] names = pojoInfo.getGeneratedColumnNames();
 			if (names.length != 0) {
-				this.generatedKeyReceiver = row;
-				this.generatedKeyNames = names;
+				generatedKeyReceiver = row;
+				generatedKeyNames = names;
 			}
 		}
 
@@ -420,31 +419,31 @@ public class Query {
 						pojoInfo.putValue(generatedKeyReceiver, generatedKeyName, value);
 
 						/*-
-						
-						
+
+
 						Property prop = pojoInfo.getProperty(generatedKeyName);
 						if (prop == null) {
 							throw new DbException("Generated key name not found: " + generatedKeyName);
 						}
-						
+
 						/*
 						 * getObject() below doesn't handle primitives correctly. Must convert to object
 						 * equivalent.
 						 * /
-						
+
 						Class<?> type = Util.wrap(prop.dataType);
-						
+
 						Object colValue = sqlMaker.convertValue(rs.getObject(i), meta.getColumnTypeName(i));
-						
+
 						Object newKey;
 						if (colCount == 1) {
 							newKey = rs.getObject(1, type);
 						} else {
 							newKey = rs.getObject(prop.name, type);
 						}
-						
+
 						pojoInfo.putValue(generatedKeyReceiver, prop.name, newKey);
-						*/
+						 */
 					}
 				}
 			}
@@ -483,19 +482,19 @@ public class Query {
 
 	/**
 	 * Temporary hack. Avoid.
-	 * 
+	 *
 	 * @deprecated
 	 * @param generatedKeyName
 	 * @return / public Query generatedKeyName(String generatedKeyName) {
 	 *         this.generatedKeyName = generatedKeyName; return this; }
-	 * 
+	 *
 	 *         public long getGeneratedKeyValue() { return generatedKeyValue; }
 	 */
 
 	/**
 	 * This is a temporary hack to deal with inserting Maps using sql. May go away.
 	 * Marking this deprecated right from the start.
-	 * 
+	 *
 	 * @deprecated
 	 * @return / public long getGeneratedKey(String colName) { if (generatedKeys !=
 	 *         null) { try { return generatedKeys.getLong(colName); } catch
@@ -563,7 +562,7 @@ public class Query {
 	 * Specify that this query should be a part of the specified transaction.
 	 */
 	public Query transaction(Transaction trans) {
-		this.transaction = trans;
+		transaction = trans;
 		return this;
 	}
 
@@ -594,7 +593,7 @@ public class Query {
 	 * @return this, to enable maxLatency to be chained, a la {@code db.sql( "select count(*) from Thing" ).maxLatency(50).first( Long.class )}
 	 */
 	public Query maxLatency( long millis ) {
-		this.maxLatency = millis;
+		maxLatency = millis;
 		return this;
 	}
 

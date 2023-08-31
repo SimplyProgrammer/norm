@@ -8,12 +8,12 @@ import com.dieselpoint.norm.DbException;
  */
 public class ExceptionLatencyAlerter implements LatencyAlerter {
 
-    public ExceptionLatencyAlerter() {
-    }
+	public ExceptionLatencyAlerter() {
+	}
 
-    @Override
-    public void alertLatencyFailure( DbLatencyWarning warning ) {
-        if (warning.maxAcceptableLatency > 0)
-            throw new DbException( warning.toString() );
-    }
+	@Override
+	public void alertLatencyFailure( DbLatencyWarning warning ) {
+		if (warning.maxAcceptableLatency > 0)
+			throw new DbException( warning.toString() );
+	}
 }

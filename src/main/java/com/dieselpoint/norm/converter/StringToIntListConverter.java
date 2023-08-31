@@ -6,6 +6,8 @@ import java.util.List;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
+import com.dieselpoint.norm.Util;
+
 @Converter
 public class StringToIntListConverter implements AttributeConverter<List<Integer>, String> {
 
@@ -14,17 +16,8 @@ public class StringToIntListConverter implements AttributeConverter<List<Integer
 		if (attribute == null) {
 			return null;
 		}
-		StringBuilder sb = new StringBuilder();
-		int len = attribute.size();
-
-		for (int i = 0; i < len; i++) {
-			if (i > 0) {
-				sb.append(',');
-			}
-			sb.append(attribute.get(i).intValue());
-
-		}
-		return sb.toString();
+		
+		return Util.join(attribute);
 	}
 
 	@Override
@@ -39,7 +32,7 @@ public class StringToIntListConverter implements AttributeConverter<List<Integer
 		for (int i = 0; i < in.length(); i++) {
 			int digit = in.charAt(i) - '0';
 			if (digit >= 0 && digit <= 9) {
-				value = (value * 10) + digit;
+				value = value * 10 + digit;
 			} else {
 				// hit a comma
 				list.add(value);

@@ -7,7 +7,7 @@ package com.dieselpoint.norm.serialize;
  * be thread-safe.
  */
 public interface DbSerializable {
-	
+
 	public String serialize(Object in);
 	public Object deserialize(String in, Class<?> targetClass);
 

@@ -130,6 +130,7 @@ public class SampleCode {
 		// ignore static fields
 		public static String ignoreThisToo;
 
+		@Override
 		public String toString() {
 			return id + " " + firstname + " " + lastname;
 		}
