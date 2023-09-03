@@ -2,6 +2,11 @@
 /etc/
 /h2test.mv.db
 /sqlitetest.db
-/.settings/
+bin/
+tmp/
+.metadata
+.classpath
+.settings
+.project
 .idea
 /.DS_Store
