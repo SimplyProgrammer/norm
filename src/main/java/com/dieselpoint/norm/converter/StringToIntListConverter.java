@@ -24,12 +24,13 @@ public class StringToIntListConverter implements AttributeConverter<List<Integer
 	public List<Integer> convertToEntityAttribute(String in) {
 		// deserialize string in the form "123,456" no spaces allowed
 		List<Integer> list = new ArrayList<>();
-		if (in == null || in.length() == 0) {
+		int len;
+		if (in == null || (len = in.length()) == 0) {
 			return list;
 		}
 
 		int value = 0;
-		for (int i = 0; i < in.length(); i++) {
+		for (int i = 0; i < len; i++) {
 			int digit = in.charAt(i) - '0';
 			if (digit >= 0 && digit <= 9) {
 				value = value * 10 + digit;

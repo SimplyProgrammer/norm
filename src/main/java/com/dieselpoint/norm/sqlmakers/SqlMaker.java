@@ -2,30 +2,37 @@ package com.dieselpoint.norm.sqlmakers;
 
 import com.dieselpoint.norm.Query;
 
+/**
+ * Used for generating real SQL queries from {@link Query} and respective pojo representing entity/database record.
+ * 
+ * Implementing this interface is the most low level of creating your own SQL flawor implementation.
+ * 
+ * @see StandardSqlMaker
+ */
 public interface SqlMaker {
 
-	public String getInsertSql(Query query, Object row);
+	String getInsertSql(Query query, Object row);
 
-	public Object[] getInsertArgs(Query query, Object row);
+	Object[] getInsertArgs(Query query, Object row);
 
-	public String getUpdateSql(Query query, Object row);
+	String getUpdateSql(Query query, Object row);
 
-	public Object[] getUpdateArgs(Query query, Object row);
+	Object[] getUpdateArgs(Query query, Object row);
 
-	public String getDeleteSql(Query query, Object row);
+	String getDeleteSql(Query query, Object row);
 
-	public Object[] getDeleteArgs(Query query, Object row);
+	Object[] getDeleteArgs(Query query, Object row);
 
-	public String getUpsertSql(Query query, Object row);
+	String getUpsertSql(Query query, Object row);
 
-	public Object[] getUpsertArgs(Query query, Object row);
+	Object[] getUpsertArgs(Query query, Object row);
 
-	public String getSelectSql(Query query, Class<?> rowClass);
+	String getSelectSql(Query query, Class<?> rowClass);
 
-	public String getCreateTableSql(Class<?> clazz);
+	String getCreateTableSql(Class<?> clazz);
 
-	public PojoInfo getPojoInfo(Class<?> rowClass);
+	PojoInfo getPojoInfo(Class<?> rowClass);
 
-	public Object convertValue(Object value, String columnTypeName);
+	Object convertValue(Object value, String columnTypeName);
 
 }

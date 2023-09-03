@@ -1,15 +1,23 @@
 package com.dieselpoint.norm.sqlmakers;
 
+/**
+ * Interface that provides basic means of getting information about Plain Old Java Object (pojo) and allows you to dynamically read and write into its fields.
+ * Used mainly internally for pojo to database entity/record mapping!
+ * 
+ * @see SqlMaker
+ */
 public interface PojoInfo {
 
-	public Object getValue(Object pojo, String name);
+	Object getValue(Object pojo, String name);
 
-	public void putValue(Object pojo, String name, Object value);
+	default void putValue(Object pojo, String name, Object value) {
+		putValue(pojo, name, value, false);
+	}
+	
+	void putValue(Object pojo, String name, Object value, boolean ignoreIfMissing);
 
-	public void putValue(Object pojo, String name, Object value, boolean ignoreIfMissing);
+	String[] getGeneratedColumnNames();
 
-	public String[] getGeneratedColumnNames();
-
-	public Property getProperty(String name);
+	Property getProperty(String name);
 
 }

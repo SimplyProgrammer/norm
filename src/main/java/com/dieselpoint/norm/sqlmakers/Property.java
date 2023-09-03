@@ -9,6 +9,12 @@ import javax.persistence.EnumType;
 
 import com.dieselpoint.norm.serialize.DbSerializable;
 
+/**
+ * Contains information about single field of java Object.
+ * It is used for both SQL generation and reading / writing into objects...
+ * 
+ * @see PojoInfo
+ */
 @SuppressWarnings("rawtypes")
 public class Property {
 	public String name;

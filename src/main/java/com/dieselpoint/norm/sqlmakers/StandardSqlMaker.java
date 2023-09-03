@@ -2,7 +2,6 @@ package com.dieselpoint.norm.sqlmakers;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,14 +17,14 @@ import com.dieselpoint.norm.Util;
  */
 public class StandardSqlMaker implements SqlMaker {
 
-	private static ConcurrentHashMap<Class<?>, StandardPojoInfo> map = new ConcurrentHashMap<>();
+	protected static final ConcurrentHashMap<Class<?>, StandardPojoInfo> CACHE = new ConcurrentHashMap<>();
 
 	@Override
 	public synchronized StandardPojoInfo getPojoInfo(Class<?> rowClass) {
-		StandardPojoInfo pi = map.get(rowClass);
+		StandardPojoInfo pi = CACHE.get(rowClass);
 		if (pi == null) {
 			pi = new StandardPojoInfo(rowClass);
-			map.put(rowClass, pi);
+			CACHE.put(rowClass, pi);
 
 			makeInsertSql(pi);
 			makeUpsertSql(pi);
@@ -133,13 +132,13 @@ public class StandardSqlMaker implements SqlMaker {
 		pojoInfo.insertSqlArgCount = pojoInfo.insertColumnNames.length;
 
 		pojoInfo.insertSql = "insert into %s (" + Util.join(pojoInfo.insertColumnNames) + // comma sep list?
-				") values (" + Util.getQuestionMarks(pojoInfo.insertSqlArgCount) + ")";
+				") values (" + Util.joinChars('?', pojoInfo.insertSqlArgCount) + ")";
 	}
 
 	public void makeUpsertSql(StandardPojoInfo pojoInfo) {
 	}
 
-	private void makeSelectColumns(StandardPojoInfo pojoInfo) {
+	public void makeSelectColumns(StandardPojoInfo pojoInfo) {
 		if (pojoInfo.propertyMap.isEmpty()) {
 			// this applies if the rowClass is a Map
 			pojoInfo.selectColumns = "*";
@@ -308,7 +307,7 @@ public class StandardSqlMaker implements SqlMaker {
 		StandardPojoInfo pojoInfo = getPojoInfo(row.getClass());
 		Object[] args = new Object[pojoInfo.primaryKeyNames.size()];
 
-		for (int i = 0; i < pojoInfo.primaryKeyNames.size(); i++) {
+		for (int i = 0, size = pojoInfo.primaryKeyNames.size(); i < size; i++) {
 			Object primaryKeyValue = pojoInfo.getValue(row, pojoInfo.primaryKeyNames.get(i));
 			args[i] = primaryKeyValue;
 		}

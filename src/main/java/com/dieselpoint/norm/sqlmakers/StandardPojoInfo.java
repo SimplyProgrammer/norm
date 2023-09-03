@@ -32,7 +32,6 @@ import com.dieselpoint.norm.serialize.DbSerializer;
 /**
  * Provides means of reading and writing properties in a pojo.
  */
-@SuppressWarnings("rawtypes")
 public class StandardPojoInfo implements PojoInfo {
 
 	/*
@@ -272,11 +271,6 @@ public class StandardPojoInfo implements PojoInfo {
 	}
 
 	@Override
-	public void putValue(Object pojo, String name, Object value) {
-		putValue(pojo, name, value, false);
-	}
-
-	@Override
 	public void putValue(Object pojo, String name, Object value, boolean ignoreIfMissing) {
 
 		Property prop = propertyMap.get(name);
@@ -302,7 +296,7 @@ public class StandardPojoInfo implements PojoInfo {
 		if (prop.writeMethod != null) {
 			try {
 				if (value instanceof BigInteger && prop.writeMethod.getParameterCount() >= 1) {
-					Class type = prop.writeMethod.getParameterTypes()[0];
+					Class<?> type = prop.writeMethod.getParameterTypes()[0];
 					if (type.equals(Long.TYPE) || type.equals(Long.class)) {
 						value = ((BigInteger) value).longValue();
 					}
@@ -333,28 +327,6 @@ public class StandardPojoInfo implements PojoInfo {
 
 	}
 
-	/**
-	 * Convert a string to an enum const of the appropriate class.
-	 */
-	private <T extends Enum<T>> Object getEnumConst(Class<T> enumType, EnumType type, Object value) {
-		String str = value.toString();
-		if (type == EnumType.ORDINAL) {
-			Integer ordinalValue = (Integer) value;
-			if (ordinalValue < 0 || ordinalValue >= enumType.getEnumConstants().length) {
-				throw new DbException(
-						"Invalid ordinal number " + ordinalValue + " for enum class " + enumType.getCanonicalName());
-			}
-			return enumType.getEnumConstants()[ordinalValue];
-		}
-
-		for (T e : enumType.getEnumConstants()) {
-			if (str.equals(e.toString())) {
-				return e;
-			}
-		}
-		throw new DbException("Enum value does not exist. value:" + str);
-	}
-
 	@Override
 	public Property getProperty(String name) {
 		return propertyMap.get(name);
@@ -365,4 +337,25 @@ public class StandardPojoInfo implements PojoInfo {
 		return generatedColumnNames;
 	}
 
+	/**
+	 * Convert a string to an enum const of the appropriate class.
+	 */
+	public static <T extends Enum<T>> Object getEnumConst(Class<T> enumType, EnumType type, Object value) {
+		String str = value.toString();
+		if (type == EnumType.ORDINAL) {
+			Integer ordinalValue = (Integer) value;
+			if (ordinalValue < 0 || ordinalValue >= enumType.getEnumConstants().length) {
+				throw new DbException(
+						"Invalid ordinal number " + ordinalValue + " for enum class " + enumType.getCanonicalName());
+			}
+			return enumType.getEnumConstants()[ordinalValue];
+		}
+		
+		for (T e : enumType.getEnumConstants()) {
+			if (str.equals(e.toString())) {
+				return e;
+			}
+		}
+		throw new DbException("Enum value does not exist. value:" + str);
+	}
 }
